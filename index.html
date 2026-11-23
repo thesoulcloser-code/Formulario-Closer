@@ -1,0 +1,422 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width,initial-scale=1">
+<title>¿Closer o Setter?</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link href="https://fonts.googleapis.com/css2?family=Syne:wght@600;700;800&family=DM+Sans:opsz,wght@9..40,400;9..40,500;9..40,700&display=swap" rel="stylesheet">
+<style>
+/* VOICE: cálida, directa, íntima; como una mentora que te habla de frente
+   IDEA: un instrumento de medición del alma vendedora: una aguja entre Setter y Closer
+   PICTURE: el dial semicircular que se mueve en vivo con cada respuesta
+   COLOUR and TYPE: vino profundo dominante, rubor de soporte, oro (setter) y rosa intenso (closer); Syne + DM Sans
+   LAYOUT: banda vino a todo ancho arriba, una sola columna serena para preguntas, resultados como expediente */
+:root{color-scheme:light dark;
+--bg:light-dark(#fbf1ec,#1a0610);--panel:light-dark(#ffffff,#2a0c1b);--ink:light-dark(#2a0818,#fbeee9);
+--mute:light-dark(#7a5563,#c9a7b4);--line:light-dark(#ecd6cd,#47192f);--wine:#4a0b2b;--wine2:#6d1640;
+--cl:#e0457a;--st:#f0a531;--soft:light-dark(#f6e2da,#33101f)}
+:root[data-theme=light]{color-scheme:light}:root[data-theme=dark]{color-scheme:dark}
+*{box-sizing:border-box;min-width:0}
+body{margin:0;background:var(--bg);color:var(--ink);font:16px/1.55 "DM Sans",system-ui,sans-serif;overflow-x:clip}
+h1,h2,h3{font-family:Syne,"DM Sans",sans-serif;line-height:1.05;text-wrap:balance;margin:0 0 .5em}
+h1{font-size:clamp(34px,5.4vw,56px);font-weight:800}h2{font-size:clamp(28px,3.6vw,40px);font-weight:700}h3{font-size:22px;font-weight:700;margin-top:1.6em}
+p{margin:0 0 1em;max-width:64ch}
+.band{padding:clamp(28px,4vw,64px) max(5vw,16px)}
+.wrap{max-width:860px;margin:0 auto}
+.top{position:sticky;top:0;z-index:5;background:var(--wine);color:#fbeee9;display:flex;flex-wrap:wrap;gap:8px 16px;align-items:center;justify-content:space-between;padding:10px max(5vw,16px)}
+.brand{font-family:Syne;font-weight:800;font-size:15px}
+.steps{display:flex;flex-wrap:wrap;gap:6px}
+.steps span{font-size:13px;padding:4px 10px;border-radius:99px;background:#ffffff14;color:#e9c9d6}
+.steps span.on{background:#fbeee9;color:var(--wine);font-weight:700}.steps span.done{color:#fff}
+.reset{background:none;border:0;color:#e9c9d6;font:inherit;font-size:13px;text-decoration:underline;cursor:pointer;min-height:32px}
+.hero{background:var(--wine);color:#fbeee9}
+.hero-in{max-width:1100px;margin:0 auto;display:grid;grid-template-columns:minmax(0,1.1fr) minmax(0,.9fr);gap:32px;align-items:center}
+.hero .lead{font-size:18px;color:#f1d6e0}
+.kick{font-size:14px;color:#f3b9cf;font-weight:700}
+.dialbox{color:#fbeee9}
+.dial{width:100%;max-width:440px;display:block;margin:auto}
+.needle{transform-origin:130px 130px;transform-box:view-box;transition:transform .7s cubic-bezier(.3,1.4,.5,1)}
+.swing{animation:sw 4.5s ease-in-out infinite alternate}
+@keyframes sw{from{transform:rotate(-62deg)}to{transform:rotate(62deg)}}
+@media(prefers-reduced-motion:reduce){.swing{animation:none}.needle{transition:none}.flip .inner{transition:none!important}}
+.btn{display:inline-flex;align-items:center;justify-content:center;gap:8px;min-height:48px;padding:12px 22px;border-radius:14px;border:0;background:var(--cl);color:#fff;font:700 16px "DM Sans",sans-serif;cursor:pointer;text-decoration:none}
+.btn.big{min-height:56px;font-size:18px;padding:14px 28px}
+.btn.ghost{background:transparent;color:inherit;border:2px solid currentColor}
+.btn.light{background:#fbeee9;color:var(--wine)}
+.btn:focus-visible,.opt:focus-visible,.flip:focus-visible,.yn button:focus-visible,.reset:focus-visible{outline:3px solid var(--st);outline-offset:2px}
+.btn:disabled{opacity:.45;cursor:default}
+.row{display:flex;flex-wrap:wrap;gap:12px;align-items:center;margin-top:20px}
+.mods{display:grid;grid-template-columns:repeat(auto-fit,minmax(min(100%,190px),1fr));gap:14px}
+.mod{background:var(--panel);border:1px solid var(--line);border-radius:18px;padding:18px}
+.mod b{font-family:Syne;font-size:18px;display:block;margin-bottom:4px}
+.mod span{color:var(--mute);font-size:15px}
+.roles{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:14px;margin:18px 0}
+.role{border-radius:18px;padding:20px;color:#2a0818}
+.role.s{background:#fde4b8}.role.c{background:#fbd0df}
+.role b{font-family:Syne;font-size:22px;display:block}
+.flips{display:grid;grid-template-columns:repeat(auto-fill,minmax(min(100%,240px),1fr));gap:14px}
+.flip{perspective:900px;border:0;padding:0;background:none;cursor:pointer;min-height:190px;text-align:left;font:inherit;color:inherit}
+.flip .inner{position:relative;width:100%;height:100%;min-height:190px;transition:transform .6s;transform-style:preserve-3d}
+.flip.on .inner{transform:rotateY(180deg)}
+.face{position:absolute;inset:0;border-radius:18px;padding:18px;backface-visibility:hidden;display:flex;flex-direction:column;gap:8px}
+.face small{font-size:13px;font-weight:700}
+.front{background:var(--panel);border:1px solid var(--line)}
+.front p{font-family:Syne;font-size:21px;font-weight:700;line-height:1.15;margin:0}
+.front em{margin-top:auto;font-size:13px;color:var(--mute);font-style:normal}
+.back{background:var(--wine);color:#fbeee9;transform:rotateY(180deg);font-size:15px}
+.back small{color:#f3b9cf}
+.count{color:var(--mute);font-size:14px;margin-top:10px}
+.det{background:var(--panel);border:1px solid var(--line);border-radius:18px;padding:8px 18px}
+.dq{display:flex;flex-wrap:wrap;gap:10px;justify-content:space-between;align-items:center;padding:12px 0;border-bottom:1px solid var(--line)}
+.dq:last-child{border:0}.dq span{flex:1 1 260px}
+.yn{display:flex;gap:6px}.yn button{min-width:64px;min-height:44px;border-radius:12px;border:2px solid var(--line);background:transparent;color:inherit;font:700 15px "DM Sans";cursor:pointer}
+.yn button.sel{background:var(--ink);color:var(--bg);border-color:var(--ink)}
+.verdict{margin-top:14px;padding:16px 18px;border-radius:16px;font-weight:500}
+.v0{background:var(--soft)}.vok{background:#d9f0e3;color:#123d27}.vwarn{background:#fde4b8;color:#4a2a00}.vbad{background:#fbd0d4;color:#5a0a14}
+.qwrap{max-width:680px;margin:0 auto}
+.bar{height:8px;border-radius:99px;background:var(--line);overflow:hidden;margin:10px 0 26px}.bar i{display:block;height:100%;background:var(--cl);transition:width .4s}
+.qn{color:var(--mute);font-size:14px;font-weight:700}
+.q{font-family:Syne;font-size:clamp(24px,3.2vw,32px);font-weight:700;line-height:1.12;margin:6px 0 22px;text-wrap:balance}
+.opts{display:grid;gap:10px}
+.opt{display:flex;gap:14px;align-items:center;width:100%;min-height:56px;padding:14px 18px;border-radius:16px;border:2px solid var(--line);background:var(--panel);color:inherit;font:500 16px/1.35 "DM Sans";text-align:left;cursor:pointer;transition:border-color .2s,transform .15s}
+.opt:hover{border-color:var(--cl)}.opt:active{transform:scale(.99)}
+.opt i{flex:none;width:30px;height:30px;border-radius:50%;display:grid;place-items:center;background:var(--soft);font-style:normal;font-weight:700;font-size:14px}
+.opt.sel{border-color:var(--cl);background:var(--soft)}.opt.sel i{background:var(--cl);color:#fff}
+.refl{margin-top:20px;padding:18px 20px;border-radius:16px;background:var(--wine);color:#fbeee9;animation:up .4s ease}
+.refl b{color:#f3b9cf;display:block;font-size:13px;margin-bottom:4px}
+@keyframes up{from{opacity:0;transform:translateY(8px)}}
+.back-link{background:none;border:0;color:var(--mute);font:inherit;cursor:pointer;text-decoration:underline;min-height:44px;padding:0}
+.live{display:grid;grid-template-columns:minmax(0,1fr) 150px;gap:24px;align-items:start}
+.live .mini{color:var(--ink);text-align:center;font-size:13px;color:var(--mute)}
+.res-hero{background:var(--wine);color:#fbeee9;text-align:center}
+.res-hero h1{font-size:clamp(40px,7vw,72px);margin:.1em 0 .25em}
+.res-hero .dial{max-width:340px}
+.split{display:flex;height:46px;border-radius:14px;overflow:hidden;max-width:560px;margin:18px auto 6px;font-weight:700;color:#2a0818}
+.split div{display:flex;align-items:center;padding:0 14px;white-space:nowrap;transition:width .8s}
+.split .s{background:var(--st)}.split .c{background:var(--cl);color:#fff;justify-content:flex-end}
+.stats{display:grid;grid-template-columns:repeat(3,minmax(0,1fr));gap:12px;margin:22px 0}
+.stat{background:var(--panel);border:1px solid var(--line);border-radius:18px;padding:16px}
+.stat b{font-family:Syne;font-size:clamp(30px,4vw,42px);display:block;line-height:1}
+.stat span{font-size:14px;color:var(--mute)}
+.two{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:22px;align-items:start}
+.dims .d{margin-bottom:12px}.dims .d div{display:flex;justify-content:space-between;font-size:15px}
+.dims .t{height:10px;border-radius:99px;background:var(--line);overflow:hidden;margin-top:4px}.dims .t i{display:block;height:100%}
+.radar{width:100%;max-width:360px;display:block;margin:auto;color:var(--ink)}
+.list{display:grid;gap:10px;padding:0;margin:0;list-style:none}
+.list li{background:var(--panel);border:1px solid var(--line);border-radius:16px;padding:14px 16px}
+.list li b{display:block}
+.quote{border-left:4px solid var(--cl);padding:4px 0 4px 16px;margin:14px 0;font-size:18px}
+.cta{background:var(--wine);color:#fbeee9;border-radius:24px;padding:clamp(22px,4vw,40px);margin-top:28px;position:relative;overflow:hidden}
+.cta h2{font-size:clamp(30px,4.6vw,48px)}.cta p{color:#f1d6e0}
+.cta ul{padding-left:20px;margin:0 0 10px}.cta li{margin:6px 0}
+.cta .ring{position:absolute;right:-60px;top:-60px;width:220px;height:220px;border-radius:50%;border:26px solid #ffffff10}
+.pend{font-size:13px;color:#f3b9cf}
+.gate{max-width:640px;margin:0 auto;text-align:center}
+.gate .dial{max-width:300px;filter:blur(1.5px);opacity:.9}
+.gate .q{margin-bottom:12px}
+.gate .row{justify-content:center}
+.gate .steps2{display:grid;gap:10px;text-align:left;margin:20px 0;padding:0;list-style:none;counter-reset:n}
+.gate .steps2 li{background:var(--panel);border:1px solid var(--line);border-radius:16px;padding:14px 16px 14px 56px;position:relative;counter-increment:n}
+.gate .steps2 li::before{content:counter(n);position:absolute;left:16px;top:13px;width:28px;height:28px;border-radius:50%;background:var(--cl);color:#fff;display:grid;place-items:center;font-weight:700;font-size:14px}
+.regform{display:grid;gap:14px;text-align:left;margin-top:22px}
+.regform label{display:grid;gap:6px;font-weight:700;font-size:15px}
+.regform input:not([type=checkbox]){font:16px "DM Sans";min-height:48px;padding:10px 14px;border-radius:12px;border:2px solid var(--line);background:var(--panel);color:var(--ink)}
+.regform input:focus-visible{outline:3px solid var(--st);outline-offset:1px}
+.regform .check{display:flex;gap:12px;align-items:flex-start;font-weight:500}
+.regform .check input{width:24px;height:24px;flex:none;margin-top:2px;accent-color:var(--cl)}
+.consent{background:var(--soft);border-radius:14px;padding:12px 16px;font-size:14px}
+.consent summary{cursor:pointer;font-weight:700;min-height:28px}
+.consent p{margin:10px 0 0}
+.err{color:var(--cl);font-weight:700;margin:0;min-height:1.2em}
+.regform .btn{justify-self:center}
+.regbox{display:flex;flex-wrap:wrap;gap:14px;align-items:center;justify-content:space-between;background:var(--soft);border-radius:18px;padding:18px 20px;margin-top:22px}
+.regbox div{flex:1 1 280px}.regbox b{display:block}.regbox span{color:var(--mute);font-size:15px}
+.fine{font-size:13px;color:var(--mute);margin-top:28px}
+.toast{position:fixed;left:50%;bottom:20px;transform:translateX(-50%);background:var(--ink);color:var(--bg);padding:10px 18px;border-radius:12px;font-weight:700;opacity:0;transition:opacity .3s;pointer-events:none}
+.toast.on{opacity:1}
+@media(max-width:760px){.hero-in,.two{grid-template-columns:minmax(0,1fr)}.dialbox{order:-1;max-width:330px;margin:auto}.live{grid-template-columns:minmax(0,1fr)}.live .mini{display:none}}
+@media(max-width:600px){.roles,.stats{grid-template-columns:minmax(0,1fr)}.split{font-size:14px}}
+</style>
+</head>
+<body>
+<header class="top"><span class="brand">THE SOUL CLOSER · Test vendedor</span><nav class="steps" id="steps"></nav></header>
+<main id="app"></main>
+<div class="toast" id="toast"></div>
+<script>
+{
+const CONFIG={
+  mentoria:"",      // Enlace de compra o aplicación a THE SOUL CLOSER (Hotmart, Stripe, Calendly…)
+  whatsapp:"50664609165",
+  registro:"https://hooks.airtable.com/workflows/v1/genericWebhook/appiTpH00MtVlyElE/wflCXDcHR7QX0vThZ/wtruVUDm9vj8xMZs7"
+};
+const K="tsc-test-v3";
+const STEPS=[["home","Inicio"],["mito","El mito"],["despertar","Despertar"],["estructura","Tu personalidad"],["registro","Registro"],["resultado","Resultado"]];
+
+const MYTHS=[
+["Tengo que invertir dinero para empezar a vender.","No compras inventario, paquetes ni membresías para poder vender. Lo que inviertes es en tu formación, como en cualquier profesión."],
+["Vender es insistir y manipular.","La venta consultiva se basa en preguntar y escuchar. Si el producto no le sirve a la persona, un buen closer no lo vende."],
+["Solo venden los extrovertidos.","Muchos grandes closers son personas reservadas: escuchan más de lo que hablan. El carisma ayuda; el método es lo que vende."],
+["No es un trabajo de verdad.","Es un rol con nombre propio en empresas de educación, servicios y finanzas. El setter califica y agenda; el closer conduce la llamada de decisión."],
+["Necesito experiencia previa.","Se aprende con método, práctica en roleplays y corrección constante. Esa es la diferencia entre intentarlo solo y hacerlo acompañado."]
+];
+// Despertar: [pregunta, opciones [texto, puntaje|null], reflexión (texto o arreglo por opción), clave]
+const EX=[
+["Si tu vida siguiera exactamente igual cinco años más, ¿cómo te sentirías?",[["Tranquila/o, me gusta así",1],["Un poco inquieta/o",2],["Frustrada/o, sé que doy para más",3],["Me asusta. No quiero eso",4]],"",""],
+["Si mañana tuvieras dos horas libres más al día, ¿a qué se las darías?",[["A mi familia",null],["A mi salud y a mí",null],["A un proyecto propio",null],["A viajar y vivir experiencias",null]],"","para"],
+["¿Qué te ha detenido hasta hoy de explorar el mundo de las ventas?",[["Creo que necesito experiencia previa",null],["No sé por dónde empezar",null],["Miedo al rechazo",null],["Creo que no tengo el perfil",null]],
+["Nadie nace con experiencia: se construye. Lo que sí necesitas es práctica guiada y alguien que te corrija.","No saber por dónde empezar no es falta de talento: es falta de mapa. Y los mapas se aprenden.","El rechazo no es hacia ti: es hacia una oferta, en un momento. Se entrena como un músculo.","Ahora ya lo mediste con datos, no con suposiciones."],"freno"]
+];
+const exAns=k=>{const i=EX.findIndex(e=>e[3]==k);return i>=0&&S.ea[i]!=null?EX[i][1][S.ea[i]][0]:""};
+const DIMS={
+S1:["Iniciativa","s","Abres conversaciones sin esperar permiso. Es la materia prima del setter.","Te cuesta dar el primer paso con desconocidos. Con guiones y práctica se vuelve rutina."],
+S2:["Ritmo y energía","s","Te energiza el volumen: muchas conversaciones no te desgastan.","El volumen te drena. Necesitas bloques de trabajo diseñados para tu energía."],
+S3:["Orden y seguimiento","s","Das seguimiento con sistema. En ventas, el dinero está en el seguimiento.","Se te escapan los seguimientos. Un sistema sencillo y un ritual diario lo resuelven."],
+C1:["Escucha profunda","c","Escuchas lo que la persona no dice. Es la base de un buen diagnóstico de cierre.","Tiendes a hablar o resolver rápido. Preguntar más y hablar menos se entrena."],
+C2:["Temple ante objeciones","c","Sostienes silencios y objeciones sin perder tu centro.","La tensión te empuja a ceder o a llenar silencios. Es lo primero que se pule en roleplays."],
+C3:["Dirección","c","Guías la conversación hacia una decisión, con respeto.","Prefieres no presionar y a veces dejas a la persona sin decidir. Dirigir no es empujar."]
+};
+// Cada opción: [texto, rasgo, puntos]. Las 7 primeras definen el rol (número impar: nunca hay empate).
+const PQ=[
+["r","Las personas que te conocen dirían que eres…",[["Sociable: hablo con todo el mundo","S1",3],["Profunda/o: me gusta conocer de verdad a las personas","C1",3],["Amigable y fácil de tratar","S1",2],["Buena/o para escuchar","C1",2]]],
+["r","Tu energía natural es…",[["Serena: pocas cosas me alteran","C2",2],["Rápida: me encanta el movimiento y hacer muchas cosas","S2",3],["Constante y calmada, aun bajo presión","C2",3],["Activa, con pausas cortas para recargar","S2",2]]],
+["r","¿Cómo tomas tus decisiones?",[["Con orden: listas, pasos y un plan claro","S3",3],["Confío en lo que percibo de la situación","C3",2],["Primero organizo toda la información","S3",2],["Con convicción: decido y me hago cargo","C3",3]]],
+["r","En un equipo, tu rol natural es…",[["Quien lidera y ayuda a decidir","C3",3],["La persona organizada que no deja nada pendiente","S3",3],["Quien convence a los demás de una idea","C3",2],["Quien da seguimiento a cada detalle","S3",2]]],
+["r","¿Qué te motiva más?",[["Muchas pequeñas victorias cada día","S2",3],["Ayudar a alguien a vencer sus miedos para decidir","C2",2],["Conectar con mucha gente distinta","S1",2],["Una gran victoria que cambia la vida de alguien","C3",3]]]
+];
+const ARCH={
+c:["Closer de alma","Lees lo que la persona no dice, sostienes la tensión y guías hacia una decisión. Tu lugar natural es la llamada de cierre: diagnosticar, escuchar a fondo y acompañar a alguien a decir sí (o un no honesto)."],
+s:["Setter estratega","Abres puertas con energía, sostienes el volumen y das seguimiento con sistema. Tu lugar natural es iniciar conversaciones, calificar a los prospectos y llenar la agenda del closer con citas que sí valen la pena."]
+};
+
+const fresh=()=>({step:"home",flip:[],ei:0,ea:[],pi:0,pa:[]});
+let S;try{S=JSON.parse(localStorage.getItem(K))}catch(e){}
+if(!S||!S.step)S=fresh();
+const save=()=>{try{localStorage.setItem(K,JSON.stringify(S))}catch(e){}};
+const app=document.getElementById("app");
+const L="ABCD";
+
+function dial(share,swing){
+  const a=(share-.5)*180;
+  return `<svg class="dial" viewBox="0 0 260 168" role="img" aria-label="Medidor entre Setter y Closer">
+  <path d="M30 130 A100 100 0 0 1 130 30" fill="none" stroke="var(--st)" stroke-width="20" stroke-linecap="round"/>
+  <path d="M130 30 A100 100 0 0 1 230 130" fill="none" stroke="var(--cl)" stroke-width="20" stroke-linecap="round"/>
+  ${[...Array(11)].map((_,i)=>{const t=Math.PI*(1-i/10),x1=130+76*Math.cos(t),y1=130-76*Math.sin(t),x2=130+68*Math.cos(t),y2=130-68*Math.sin(t);return `<line x1="${x1}" y1="${y1}" x2="${x2}" y2="${y2}" stroke="currentColor" stroke-opacity=".45" stroke-width="2"/>`}).join("")}
+  <g class="needle ${swing?"swing":""}" style="transform:rotate(${a}deg)"><path d="M126 130 L130 44 L134 130Z" fill="currentColor"/></g>
+  <circle cx="130" cy="130" r="11" fill="currentColor"/><circle cx="130" cy="130" r="4" fill="var(--cl)"/>
+  <text x="30" y="162" text-anchor="middle" fill="currentColor" font-size="14" font-weight="700" font-family="DM Sans">Setter</text>
+  <text x="230" y="162" text-anchor="middle" fill="currentColor" font-size="14" font-weight="700" font-family="DM Sans">Closer</text></svg>`;
+}
+function scores(){
+  const t={},m={};Object.keys(DIMS).forEach(k=>{t[k]=0;m[k]=0});
+  let sP=0,cP=0,sC=0,cC=0;
+  PQ.forEach((q,i)=>{
+    const mx={};q[2].forEach(o=>mx[o[1]]=Math.max(mx[o[1]]||0,o[2]));Object.keys(mx).forEach(k=>m[k]+=mx[k]);
+    const v=S.pa[i];if(v==null)return;const o=q[2][v];t[o[1]]+=o[2];
+    if(q[0]=="r"){if(DIMS[o[1]][1]=="c"){cP+=o[2];cC++}else{sP+=o[2];sC++}}
+  });
+  const d={};Object.keys(DIMS).forEach(k=>d[k]=m[k]?Math.round(t[k]/m[k]*100):0);
+  const avg=r=>{const v=Object.keys(DIMS).filter(k=>DIMS[k][1]==r).map(k=>d[k]);return v.length?v.reduce((a,b)=>a+b,0)/v.length:0};
+  const win=cP>sP?"c":sP>cP?"s":cC>=sC?"c":"s";
+  let share=sP+cP?cP/(sP+cP):.5;
+  share=win=="c"?Math.min(.92,Math.max(.55,share)):Math.max(.08,Math.min(.45,share));
+  return{d,s:avg("s"),c:avg("c"),b:avg("b"),share,win};
+}
+function steps(){
+  const idx=STEPS.findIndex(x=>x[0]==S.step);
+  document.getElementById("steps").innerHTML=STEPS.map((x,i)=>`<span class="${i==idx?"on":i<idx?"done":""}">${x[1]}</span>`).join("")+(S.step!="home"?`<button class="reset" data-act="restart">Reiniciar</button>`:"");
+}
+const V={};
+V.home=()=>{
+  const prog=S.ea.length||S.pa.length;
+  return `<section class="hero band"><div class="hero-in"><div>
+  <p class="kick">Test interactivo · unos 3 minutos</p>
+  <h1>¿Naciste para ser Closer o Setter?</h1>
+  <p class="lead">Descubre qué es realmente vender como closer o setter, responde las preguntas que casi nadie se hace y descubre, con un estudio de tu estructura de personalidad, qué rol encaja contigo.</p>
+  <div class="row"><button class="btn big" data-act="go" data-v="mito">Comenzar mi evaluación</button>${prog?`<button class="btn ghost" data-act="resume">Continuar donde quedé</button>`:""}</div>
+  </div><div class="dialbox">${dial(.5,true)}</div></div></section>
+  <section class="band"><div class="wrap"><h2>Cuatro paradas, un resultado</h2>
+  <div class="mods">
+  <div class="mod"><b>El mito</b><span>Qué es de verdad vender como closer o setter, y los mitos que te han frenado.</span></div>
+  <div class="mod"><b>Despertar</b><span>Tres preguntas de neuroventa sobre tu vida y lo que de verdad quieres.</span></div>
+  <div class="mod"><b>Tu personalidad</b><span>Cinco preguntas sobre tu personalidad que revelan si naciste para ser Closer o Setter.</span></div>
+  <div class="mod"><b>Tu resultado</b><span>Si eres Closer o Setter, tu afinidad con cada rol, tus fortalezas y tu siguiente paso.</span></div>
+  </div></div></section>`;
+};
+V.mito=()=>{
+  return `<section class="band"><div class="wrap">
+  <h2>Primero, lo que esto no es</h2>
+  <p><b>Vender como closer o setter no es un sistema piramidal.</b> En una pirámide ganas por reclutar personas que pagan para entrar. Aquí una empresa con un producto o servicio real te paga una comisión por las ventas que ayudas a lograr: no reclutas a nadie y no compras nada para empezar. Es un oficio con dos roles distintos:</p>
+  <div class="roles"><div class="role s"><b>Setter</b>Abre conversaciones, califica a los prospectos y agenda la llamada. Es quien enciende la chispa.</div>
+  <div class="role c"><b>Closer</b>Conduce la llamada de decisión: diagnostica, escucha, resuelve objeciones y cierra. Es quien acompaña al sí.</div></div>
+  <h3>Toca cada mito para ver la realidad</h3>
+  <div class="flips">${MYTHS.map((m,i)=>`<button class="flip ${S.flip.includes(i)?"on":""}" data-act="flip" data-v="${i}" aria-pressed="${S.flip.includes(i)}"><div class="inner"><div class="face front"><small>Mito</small><p>${m[0]}</p><em>Toca para voltear</em></div><div class="face back"><small>Realidad</small>${m[1]}</div></div></button>`).join("")}</div>
+  <p class="count">${S.flip.length} de ${MYTHS.length} mitos derribados</p>
+  <div class="row"><button class="btn big" data-act="go" data-v="despertar">Siguiente: preguntas que despiertan</button></div>
+  </div></section>`;
+};
+V.despertar=()=>{
+  const i=S.ei,q=EX[i],a=S.ea[i];
+  return `<section class="band"><div class="qwrap">
+  <span class="qn">Despertar · pregunta ${i+1} de ${EX.length}</span>
+  <div class="bar"><i style="width:${i/EX.length*100}%"></i></div>
+  <p class="q">${q[0]}</p>
+  <div class="opts">${q[1].map((o,j)=>`<button class="opt ${a===j?"sel":""}" data-act="ex" data-v="${j}"><i>${L[j]}</i>${o[0]}</button>`).join("")}</div>
+  <div class="row"><button class="back-link" data-act="exback">← Atrás</button></div>
+  </div></section>`;
+};
+V.estructura=()=>{
+  const i=S.pi,q=PQ[i],a=S.pa[i],sc=scores();
+  return `<section class="band"><div class="qwrap"><div class="live"><div>
+  <span class="qn">Tu personalidad · pregunta ${i+1} de ${PQ.length}</span>
+  <div class="bar"><i style="width:${i/PQ.length*100}%"></i></div>
+  <p class="q">${q[1]}</p>
+  <div class="opts">${q[2].map((o,j)=>`<button class="opt ${a===j?"sel":""}" data-act="pq" data-v="${j}"><i>${L[j]}</i>${o[0]}</button>`).join("")}</div>
+  <div class="row"><button class="back-link" data-act="pqback">← Atrás</button></div>
+  <p class="fine">Responde cómo eres de verdad, no cómo te gustaría ser. No hay respuestas buenas ni malas.</p>
+  </div><div class="mini">${dial(sc.share)}Tu aguja se mueve con cada respuesta</div></div></div></section>`;
+};
+function radar(d){
+  const keys=["S1","S2","S3","C1","C2","C3"],cx=180,cy=150,R=96;
+  const pt=(k,v)=>{const t=-Math.PI/2+k*2*Math.PI/keys.length;return[cx+R*v*Math.cos(t),cy+R*v*Math.sin(t)]};
+  const rings=[.25,.5,.75,1].map(r=>`<polygon points="${keys.map((_,k)=>pt(k,r).join(",")).join(" ")}" fill="none" stroke="currentColor" stroke-opacity=".15"/>`).join("");
+  const poly=keys.map((k,i)=>pt(i,(d[k]||0)/100).join(",")).join(" ");
+  const labels=keys.map((k,i)=>{const[x,y]=pt(i,1.22);const anc=Math.abs(x-cx)<8?"middle":x>cx?"start":"end";const col=DIMS[k][1]=="s"?"var(--st)":DIMS[k][1]=="c"?"var(--cl)":"currentColor";return `<text x="${x}" y="${y+4}" text-anchor="${anc}" font-size="12" font-weight="700" fill="${col}" font-family="DM Sans">${DIMS[k][0].split(" ")[0]}</text>`}).join("");
+  return `<svg class="radar" viewBox="0 0 360 300" role="img" aria-label="Mapa de tus seis rasgos">${rings}<polygon points="${poly}" fill="var(--cl)" fill-opacity=".28" stroke="var(--cl)" stroke-width="2.5"/>${labels}</svg>`;
+}
+function result(){
+  const sc=scores(),type=sc.win,A=ARCH[type];
+  const cPct=Math.round(sc.share*100),sPct=100-cPct;
+  const pot=Math.round(type=="c"?sc.c:sc.s);
+  const sq=EX.map((e,i)=>e[1][0][1]!=null?i:-1).filter(i=>i>=0);
+  const ex=sq.reduce((n,i)=>n+(S.ea[i]!=null?EX[i][1][S.ea[i]][1]:2),0);
+  const awake=Math.round((ex-sq.length)/(3*sq.length)*100);
+  const pool=Object.keys(DIMS).filter(k=>DIMS[k][1]==type);
+  const sorted=pool.sort((x,y)=>sc.d[y]-sc.d[x]);
+  return{sc,type,A,cPct,sPct,pot,awake,top:sorted.slice(0,2),low:sorted.slice(-1)};
+}
+function payload(){
+  const R=result();
+  return{perfil:R.type=="c"?"Closer":"Setter",afinidadCloser:R.cPct,afinidadSetter:R.sPct,potencial:R.pot,despertar:R.awake,
+    fortalezas:R.top.map(k=>DIMS[k][0]).join(", "),porPulir:R.low.map(k=>DIMS[k][0]).join(", "),
+    paraQue:exAns("para"),freno:exAns("freno")};
+}
+function sendLead(data){
+  let ifr=document.getElementById("sink");
+  if(!ifr){ifr=document.createElement("iframe");ifr.name="sink";ifr.id="sink";ifr.style.display="none";document.body.appendChild(ifr)}
+  const f=document.createElement("form");f.method="POST";f.action=CONFIG.registro;f.target="sink";
+  Object.entries(data).forEach(([k,v])=>{const i=document.createElement("input");i.type="hidden";i.name=k;i.value=String(v);f.appendChild(i)});
+  document.body.appendChild(f);try{f.submit()}catch(e){}f.remove();
+}
+V.registro=()=>`<section class="band"><div class="gate">
+  <span class="qn">Tu resultado está listo</span>
+  ${dial(.5)}
+  <p class="q">Antes de verlo, guarda tu resultado</p>
+  <p style="margin-inline:auto">Tu perfil y tus puntajes ya están calculados. Déjanos tus datos para guardarlos y para que una mentora de THE SOUL CLOSER pueda acompañarte en tu siguiente paso.</p>
+  <form id="regform" class="regform" novalidate>
+    <label>Nombre completo<input name="nombre" autocomplete="name" required></label>
+    <label>WhatsApp (con código de país)<input name="whatsapp" type="tel" autocomplete="tel" placeholder="+506 8888 7777" required></label>
+    <label>Correo electrónico<input name="correo" type="email" autocomplete="email" required></label>
+    <label>País<input name="pais" autocomplete="country-name" required></label>
+    <details class="consent"><summary>Consentimiento informado (toca para leer)</summary>
+      <p>Al enviar este formulario autorizo de forma libre, expresa e informada a THE SOUL CLOSER a guardar mis datos (nombre, WhatsApp, correo y país) y los resultados de mi test ¿Closer o Setter?, y a usarlos únicamente para contactarme por WhatsApp o correo con información sobre mi resultado, la mentoría THE SOUL CLOSER y oportunidades de formación en ventas.</p>
+      <p>Entiendo que mis datos no se venden ni se ceden a terceros; que el test es una autoevaluación orientativa y no un diagnóstico psicológico clínico; y que puedo pedir en cualquier momento que dejen de contactarme, o consultar, corregir o eliminar mis datos, escribiendo al WhatsApp +506 6460 9165.</p>
+      <p>Este consentimiento se otorga conforme a la Ley N.° 8968 de Protección de la Persona frente al Tratamiento de sus Datos Personales de Costa Rica.</p>
+    </details>
+    <label class="check"><input type="checkbox" name="consentimiento" required><span>He leído y acepto el consentimiento informado, y autorizo que me contacten por WhatsApp y correo.</span></label>
+    <p class="err" id="regerr" role="alert"></p>
+    <button class="btn big" type="submit">Guardar y ver mi resultado</button>
+  </form>
+  </div></section>`;
+V.resultado=()=>{
+  const R=result(),sc=R.sc;
+  const para=(exAns("para")||"tu propósito").toLowerCase();
+  const fi=EX.findIndex(e=>e[3]=="freno"),freno=exAns("freno");
+  const awakeTxt=R.awake>=70?"Estás lista/o para moverte. La incomodidad que sientes es el motor.":R.awake>=40?"Algo en ti ya está pidiendo un cambio. Escúchalo antes de que se vuelva costumbre.":"Hoy estás en calma. Este test es una semilla: guárdala para cuando quieras dar el paso.";
+  const waText=`Hola, hice el test ¿Closer o Setter? y mi perfil es «${R.A[0]}» (Setter ${R.sPct}% · Closer ${R.cPct}%). Quiero información de THE SOUL CLOSER.`;
+  const wa=CONFIG.whatsapp?`https://wa.me/${CONFIG.whatsapp}?text=${encodeURIComponent(waText)}`:"";
+  const main=CONFIG.mentoria||wa;
+  const bars=k=>{const v=sc.d[k],c=DIMS[k][1]=="s"?"var(--st)":DIMS[k][1]=="c"?"var(--cl)":"var(--ink)";return `<div class="d"><div><span>${DIMS[k][0]}</span><b>${v}</b></div><div class="t"><i style="width:${v}%;background:${c}"></i></div></div>`};
+  return `<section class="band res-hero"><div class="wrap">
+  <p class="kick">${S.nombre?S.nombre+", este es tu":"Tu"} perfil vendedor</p>
+  ${dial(sc.share)}
+  <h1>${R.A[0]}</h1>
+  <p style="margin:0 auto 10px;color:#f1d6e0">${R.A[1]}</p>
+  <p style="margin:14px auto 0;color:#f3b9cf;font-weight:700">Tu afinidad</p><div class="split" style="margin-top:6px"><div class="s" style="width:${Math.max(R.sPct,18)}%">Setter ${R.sPct}%</div><div class="c" style="width:${Math.max(R.cPct,18)}%">Closer ${R.cPct}%</div></div>
+  </div></section>
+  <section class="band"><div class="wrap">
+  <div class="stats">
+  <div class="stat"><b>${R.pot}</b><span>Potencial vendedor, de 100</span></div>
+  <div class="stat"><b>${R.awake}</b><span>Índice de despertar, de 100</span></div>
+  <div class="stat"><b>${R.type=="c"?R.cPct:R.sPct}%</b><span>Afinidad con tu rol</span></div>
+  </div>
+  <div class="two"><div>${radar(sc.d)}</div><div class="dims">
+  ${["S1","S2","S3"].map(bars).join("")}${["C1","C2","C3"].map(bars).join("")}
+  </div></div>
+  <div class="two" style="margin-top:10px"><div><h3>Tus fortalezas</h3><ul class="list">${R.top.map(k=>`<li><b>${DIMS[k][0]}</b>${DIMS[k][2]}</li>`).join("")}</ul></div>
+  <div><h3>Lo que vas a pulir</h3><ul class="list">${R.low.map(k=>`<li><b>${DIMS[k][0]}</b>${DIMS[k][3]}</li>`).join("")}</ul></div></div>
+  <h3>Tu momento</h3>
+  <p>${awakeTxt}</p>
+  <p class="quote">Tu para qué: dedicar más tiempo ${para.startsWith("a ")?para:"a "+para}.</p>
+  ${freno?`<p><b>Lo que te frenaba:</b> ${freno.toLowerCase()}. ${EX[fi][2][S.ea[fi]]}</p>`:""}
+  <h3>La verdad que nadie te dice</h3>
+  <p>El talento abre la puerta, pero no te sostiene adentro. La mayoría de quienes intentan vender solos se rinden en los primeros meses, no por falta de capacidad, sino porque nadie les corrige la llamada, nadie les da un guion probado y nadie les recuerda por qué empezaron. Un perfil como el tuyo necesita tres cosas: método, práctica guiada y alguien que te acompañe mientras pasas de la teoría a tu primera comisión.</p>
+  <div class="cta" id="cta"><div class="ring"></div>
+  <p class="kick">Tu siguiente paso</p>
+  <h2>THE SOUL CLOSER</h2>
+  <p>La mentoría para formar closers y setters desde adentro hacia afuera: vender con método y con alma, sin manipular.</p>
+  <ul><li>El método paso a paso para el rol que mejor encaja contigo: ${R.type=="s"?"setter":"closer"}.</li>
+  <li>Roleplays evaluados con rúbrica y retroalimentación personalizada.</li>
+  <li>Acompañamiento cercano para trabajar justo lo que este test marcó como «por pulir».</li></ul>
+  <div class="row"><a class="btn light big" href="${main||"#cta"}" target="_blank" rel="noopener">Quiero entrar a THE SOUL CLOSER</a>
+  ${wa&&CONFIG.mentoria?`<a class="btn ghost" href="${wa}" target="_blank" rel="noopener">Hablar por WhatsApp</a>`:""}</div>
+  ${main?"":`<p class="pend" style="margin-top:12px">Enlace de compra pendiente de configurar.</p>`}
+  </div>
+  <div class="row"><button class="btn ghost" data-act="copy">Copiar mi resultado</button><button class="back-link" data-act="restart">Hacer el test de nuevo</button></div>
+  <p class="fine">Esta es una autoevaluación orientativa basada en tus preferencias de conducta. No es un diagnóstico psicológico clínico ni garantiza ingresos; su propósito es ayudarte a conocerte y decidir tu siguiente paso.</p>
+  </div></section>`;
+};
+function render(top){
+  if((S.step=="resultado"||S.step=="registro")&&S.pa.filter(x=>x!=null).length<PQ.length)S.step="estructura";
+  app.innerHTML=V[S.step]();steps();save();
+  if(top)window.scrollTo({top:0,behavior:"instant"});
+}
+function toast(t){const e=document.getElementById("toast");e.textContent=t;e.classList.add("on");setTimeout(()=>e.classList.remove("on"),1800)}
+let lock=false;
+document.addEventListener("click",e=>{
+  const b=e.target.closest("[data-act]");if(!b)return;
+  const act=b.dataset.act,v=b.dataset.v;
+  if(act=="go"){S.step=v;render(true)}
+  else if(act=="resume"){S.step=S.reg?"resultado":S.pa.filter(x=>x!=null).length==PQ.length?"registro":S.pa.length?"estructura":S.ea.length?"despertar":"mito";render(true)}
+  else if(act=="flip"){const i=+v;S.flip.includes(i)?S.flip=S.flip.filter(x=>x!=i):S.flip.push(i);b.classList.toggle("on");b.setAttribute("aria-pressed",S.flip.includes(i));const c=app.querySelector(".count");if(c)c.textContent=`${S.flip.length} de ${MYTHS.length} mitos derribados`;save()}
+  else if(act=="ex"){if(lock)return;lock=true;S.ea[S.ei]=+v;
+    app.querySelectorAll(".opt").forEach((o,j)=>o.classList.toggle("sel",j==+v));
+    setTimeout(()=>{lock=false;if(S.ei<EX.length-1){S.ei++}else{S.step="estructura"}render(true)},350)}
+  else if(act=="exback"){if(S.ei>0){S.ei--;render(true)}else{S.step="mito";render(true)}}
+  else if(act=="pq"){if(lock)return;lock=true;S.pa[S.pi]=+v;
+    app.querySelectorAll(".opt").forEach((o,j)=>o.classList.toggle("sel",j==+v));
+    const n=app.querySelector(".needle");if(n)n.style.transform=`rotate(${(scores().share-.5)*180}deg)`;
+    setTimeout(()=>{lock=false;if(S.pi<PQ.length-1){S.pi++;render(true)}else{S.step="registro";render(true)}},380)}
+  else if(act=="pqback"){if(S.pi>0){S.pi--;render(true)}else{S.step="despertar";S.ei=EX.length-1;render(true)}}
+  else if(act=="restart"){S=fresh();render(true)}
+  else if(act=="copy"){const R=result();const t=`Mi resultado en el test ¿Closer o Setter? de THE SOUL CLOSER\nPerfil: ${R.A[0]}\nSetter ${R.sPct}% · Closer ${R.cPct}%\nPotencial vendedor: ${R.pot}/100\nFortalezas: ${R.top.map(k=>DIMS[k][0]).join(", ")}\nPor pulir: ${R.low.map(k=>DIMS[k][0]).join(", ")}`;
+    try{navigator.clipboard.writeText(t).then(()=>toast("Resultado copiado"),()=>toast("No se pudo copiar"))}catch(err){toast("No se pudo copiar")}}
+});
+document.addEventListener("submit",e=>{
+  if(e.target.id!="regform")return;e.preventDefault();
+  const f=e.target,g=n=>f.elements[n].value.trim(),err=document.getElementById("regerr");
+  const tel=g("whatsapp").replace(/[^\d+]/g,"");
+  if(!g("nombre")||!g("pais")){err.textContent="Completa tu nombre y tu país.";return}
+  if(tel.replace("+","").length<8){err.textContent="Escribe tu WhatsApp con el código de país.";return}
+  if(!/^[^@\s]+@[^@\s]+\.[^@\s]+$/.test(g("correo"))){err.textContent="Revisa tu correo electrónico.";return}
+  if(!f.elements.consentimiento.checked){err.textContent="Para continuar, acepta el consentimiento informado.";return}
+  sendLead(Object.assign({nombre:g("nombre"),whatsapp:g("whatsapp"),correo:g("correo"),pais:g("pais"),consentimiento:"true"},payload()));
+  f.querySelector("button").disabled=true;f.querySelector("button").textContent="Guardando…";
+  S.reg=true;S.nombre=g("nombre").split(" ")[0].replace(/[&<>"']/g,"");
+  setTimeout(()=>{S.step="resultado";render(true)},900);
+});
+render();
+}
+</script>
+</body>
+</html>
